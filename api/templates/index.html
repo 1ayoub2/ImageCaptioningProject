@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<title>Image Captioning — CNN + Transformer</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--accent:#38bdf8;--text:#f1f5f9;--muted:#94a3b8}
+*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:40px 20px}
+h1{margin-bottom:8px;font-weight:700}p.sub{color:var(--muted);margin-top:0;margin-bottom:30px}
+.upload-card{background:var(--card);border:2px dashed #334155;border-radius:16px;padding:48px 32px;text-align:center;width:100%;max-width:480px;transition:border-color .2s}
+.upload-card:hover{border-color:var(--accent)}input[type=file]{display:none}
+button{background:var(--accent);color:#0f172a;border:none;padding:12px 28px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:transform .1s}
+button:hover{transform:translateY(-1px)}.hint{color:var(--muted);font-size:14px;margin-top:12px}
+#result{margin-top:32px;width:100%;max-width:640px;display:none}
+#result img{width:100%;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.caption-box{background:var(--card);border-radius:12px;padding:20px;margin-top:16px;text-align:center}
+.caption-label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.caption-text{font-size:1.25rem;font-weight:600;color:var(--accent)}
+.loading{color:var(--muted);font-style:italic}
+</style>
+</head>
+<body>
+<h1>🖼️ Image Captioning</h1>
+<p class='sub'>CNN Encoder + Transformer Decoder &nbsp;|&nbsp; Flickr8k</p>
+<div class='upload-card' id='dropZone'>
+<input type='file' id='imageInput' accept='image/*'>
+<button onclick='document.getElementById("imageInput").click()'>Choose Image</button>
+<p class='hint'>or drag & drop a JPG/PNG here</p>
+</div>
+<div id='result'>
+<img id='preview' src='' alt='Uploaded image'>
+<div class='caption-box'>
+<div class='caption-label'>Generated Caption</div>
+<div class='caption-text loading' id='captionText'>Analyzing image...</div>
+</div>
+</div>
+<script>
+const input=document.getElementById('imageInput'), dropZone=document.getElementById('dropZone'), result=document.getElementById('result'), preview=document.getElementById('preview'), captionText=document.getElementById('captionText');
+async function handleFile(file){if(!file)return; const formData=new FormData(); formData.append('image',file); preview.src=URL.createObjectURL(file); result.style.display='block'; captionText.textContent='Analyzing image...'; captionText.className='caption-text loading'; try{const res=await fetch('/predict',{method:'POST',body:formData}); const data=await res.json(); if(data.error)throw new Error(data.error); captionText.textContent=data.caption; captionText.className='caption-text';}catch(err){captionText.textContent='Error: '+err.message; captionText.style.color='#ef4444';}}
+input.addEventListener('change',e=>handleFile(e.target.files[0]));
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.style.borderColor='var(--accent)'});
+dropZone.addEventListener('dragleave',e=>{e.preventDefault();dropZone.style.borderColor='#334155'});
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.style.borderColor='#334155'; if(e.dataTransfer.files.length)handleFile(e.dataTransfer.files[0])});
+</script>
+</body>
+</html>

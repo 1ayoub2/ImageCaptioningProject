@@ -1,0 +1,10 @@
+total_lines: 40460
+unique_images: 8092
+captions_per_image: 5.0
+corrupted: [('2258277193_586949ec62.jpg.1', 'missing')]
+avg_words: 11.782155215027187
+std_words: 3.8851753512492215
+max_words: 38
+min_words: 1
+vocab_size: 8918
+top10: [('a', 62989), ('.', 36581), ('in', 18975), ('the', 18419), ('on', 10744), ('is', 9345), ('and', 8852), ('dog', 8136), ('with', 7765), ('man', 7266)]
